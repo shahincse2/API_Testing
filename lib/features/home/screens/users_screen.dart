@@ -1,62 +1,37 @@
-import 'dart:convert';
-import 'package:flutter/foundation.dart';
+import 'package:api_testing/core/network/api_service.dart';
+import 'package:api_testing/data/repositories/user_repository.dart';
+import 'package:api_testing/features/home/models/usermod/user_mod.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 
-class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+class UsersScreen extends StatefulWidget {
+  const UsersScreen({super.key});
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  State<UsersScreen> createState() => _UsersScreenState();
 }
 
-class _HomePageState extends State<HomePage> {
-  List users = [];
-
-  Future<void> fetchUsers() async {
-    final response = await http.get(
-      Uri.parse('https://jsonplaceholder.typicode.com/users'),
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-      },
-    );
-
-    if (kDebugMode) {
-      print(response.body);
-    }
-
-    if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-      setState(() {
-        users.addAll(data);
-      });
-    } else {
-      throw Exception('Failed to load users');
-    }
-  }
+class _UsersScreenState extends State<UsersScreen> {
+  List<UserModel> users = [];
+  late final UsersRepository repository;
 
   @override
   void initState() {
     super.initState();
+    repository = UsersRepository(ApiService());
     fetchUsers();
+  }
+
+  Future<void> fetchUsers() async {
+    final data = await repository.fetchUsers();
+
+    setState(() {
+      users = data;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          "API Testing...",
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        centerTitle: true,
-        backgroundColor: Colors.blue,
-      ),
       body: users.isEmpty
           ? Center(child: CircularProgressIndicator())
           : ListView.builder(
@@ -79,36 +54,36 @@ class _HomePageState extends State<HomePage> {
                     leading: CircleAvatar(
                       // child: Text(initials),
                       child: Text(
-                        user['name'].split(' ').map((e) => e[0]).take(2).join(),
+                        user.name.split(' ').map((e) => e[0]).take(2).join(),
                       ),
                     ),
-                    title: Text(user['name']),
+                    title: Text(user.name),
                     subtitle: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Username: ${user['username']}',
+                          'Username: ${user.username}',
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             color: Colors.red,
                           ),
                         ),
                         Text(
-                          'UserEmail: ${user['email']}',
+                          'Email: ${user.email}',
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             color: Colors.green,
                           ),
                         ),
                         Text(
-                          'UserPhone: ${user['phone']}',
+                          'Phone: ${user.phone}',
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             color: Colors.blue,
                           ),
                         ),
                         Text(
-                          'UserWebsite: ${user['website']}',
+                          'Website: ${user.website}',
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             color: Colors.grey,

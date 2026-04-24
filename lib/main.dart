@@ -1,4 +1,4 @@
-import 'package:api_testing/home_page.dart';
+import 'package:api_testing/features/home/screens/tab_bar_screen.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -14,7 +14,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         colorScheme: .fromSeed(seedColor: Colors.deepPurple),
       ),
-      home: const HomePage(),
+      home: const TabBarScreen(),
     );
   }
 }
