@@ -125,7 +125,7 @@ class _AlbumsScreenState extends State<AlbumsScreen> {
               child: Center(
                 child: hasMoreData
                     ? const CircularProgressIndicator()
-                    : const Text("No more data available"),
+                    : const Text("No more data available..."),
               ),
             );
           }
