@@ -1,19 +1,19 @@
-class PhotosModel {
+class TodosModel {
   int id;
   int albumId;
   String title;
   String url;
   String thumbnailUrl;
 
-  PhotosModel({
+  TodosModel({
     required this.id,
     required this.albumId,
     required this.title,
     required this.url,
     required this.thumbnailUrl,
 });
-  factory PhotosModel.fromJson(Map<String, dynamic> json) {
-    return PhotosModel(
+  factory TodosModel.fromJson(Map<String, dynamic> json) {
+    return TodosModel(
       id: json['id'],
       albumId: json['albumId'],
       title: json['title'],

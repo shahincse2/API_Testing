@@ -1,19 +1,18 @@
 import 'package:api_testing/core/network/api_service.dart';
-import 'package:api_testing/data/repositories/photos_repository.dart';
-import 'package:api_testing/features/home/models/photos_model.dart';
-import 'package:cached_network_image/cached_network_image.dart';
+import 'package:api_testing/data/repositories/todos_repository.dart';
 import 'package:flutter/material.dart';
+import 'package:api_testing/features/home/models/todos_model.dart';
 
-class PhotosScreen extends StatefulWidget {
-  const PhotosScreen({super.key});
+class TodosScreen extends StatefulWidget {
+  const TodosScreen({super.key});
 
   @override
-  State<PhotosScreen> createState() => _PhotosScreenState();
+  State<TodosScreen> createState() => _TodosScreenState();
 }
 
-class _PhotosScreenState extends State<PhotosScreen> {
+class _TodosScreenState extends State<TodosScreen> {
   // প্রয়োজনীয় ভেরিয়েবল
-  List<TodosModel> displayedPhotos = []; // স্ক্রিনে প্রদর্শিত লিস্ট
+  List<AlbumsModel> displayedTodos = []; // স্ক্রিনে প্রদর্শিত লিস্ট
   int currentPage = 1; // বর্তমান পেজ নম্বর
   bool isLoading = false; // লোডিং স্টেট ট্র্যাকিং
   bool hasMoreData = true; // আরও ডাটা আছে কি না তা চেক করার জন্য
@@ -31,7 +30,7 @@ class _PhotosScreenState extends State<PhotosScreen> {
     _scrollController.addListener(_onScroll);
 
     // প্রথম পেজের ডাটা লোড করা
-    fetchInitialPhotos();
+    fetchInitialTodos();
   }
 
   // স্ক্রল ডিটেকশন ফাংশন
@@ -41,17 +40,17 @@ class _PhotosScreenState extends State<PhotosScreen> {
         _scrollController.position.maxScrollExtent - threshold &&
         !isLoading &&
         hasMoreData) {
-      fetchMorePhotos();
+      fetchMoreTodos();
     }
   }
 
   // প্রথম পেজের ডাটা নিয়ে আসার ফাংশন
-  Future<void> fetchInitialPhotos() async {
+  Future<void> fetchInitialTodos() async {
     setState(() => isLoading = true);
     try {
-      final List<TodosModel> data = await repository.fetchPhotos(currentPage);
+      final List<AlbumsModel> data = await repository.fetchTodos(currentPage);
       setState(() {
-        displayedPhotos = data;
+        displayedTodos = data;
         isLoading = false;
         if (data.isEmpty) hasMoreData = false;
       });
@@ -62,20 +61,20 @@ class _PhotosScreenState extends State<PhotosScreen> {
   }
 
   // পরবর্তী পেজগুলোর ডাটা নিয়ে আসার ফাংশন
-  void fetchMorePhotos() {
+  void fetchMoreTodos() {
     setState(() => isLoading = true);
     int nextPage = currentPage + 1;
 
     // ১ সেকেন্ড ডিলে দেওয়া হয়েছে যাতে লোডিং ইফেক্ট বোঝা যায় (অপশনাল)
     Future.delayed(const Duration(seconds: 1), () async {
       try {
-        final List<TodosModel> newData = await repository.fetchPhotos(nextPage);
+        final List<AlbumsModel> newData = await repository.fetchTodos(nextPage);
 
         setState(() {
           isLoading = false;
           if (newData.isNotEmpty) {
             currentPage = nextPage;
-            displayedPhotos.addAll(newData); // নতুন ডাটা লিস্টে যোগ করা
+            displayedTodos.addAll(newData); // নতুন ডাটা লিস্টে যোগ করা
           } else {
             hasMoreData = false; // আর কোনো ডাটা নেই
           }
@@ -94,43 +93,36 @@ class _PhotosScreenState extends State<PhotosScreen> {
         title: const Text("API Pagination Test"),
         centerTitle: true,
       ),
-      body: displayedPhotos.isEmpty && isLoading
+      body: displayedTodos.isEmpty && isLoading
           ? const Center(child: CircularProgressIndicator())
           : ListView.builder(
         controller: _scrollController,
-        itemCount: displayedPhotos.length + (hasMoreData ? 1 : 0),
+        itemCount: displayedTodos.length + (hasMoreData ? 1 : 0),
         itemBuilder: (context, index) {
-          if (index < displayedPhotos.length) {
-            final photo = displayedPhotos[index];
+          if (index < displayedTodos.length) {
+            final todos = displayedTodos[index];
             return Card(
               margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
               child: ListTile(
                 leading: CircleAvatar(
-                  child: Text(photo.id.toString(), style: const TextStyle(fontSize: 10)),
+                  child: Text(todos.id.toString(), style: const TextStyle(fontSize: 10)),
                 ),
                 title: Text(
-                  photo.title,
+                  todos.title,
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
-                subtitle: Padding(
-                  padding: const EdgeInsets.only(top: 8.0),
-                  child: CachedNetworkImage(
-                    imageUrl: "https://picsum.photos/id/${photo.id}/400/200",
-                    height: 150,
-                    width: double.infinity,
-                    fit: BoxFit.cover,
-                    placeholder: (context, url) => Container(
-                      height: 150,
-                      color: Colors.grey[200],
-                      child: const Center(child: CircularProgressIndicator()),
-                    ),
-                    errorWidget: (context, url, error) => Container(
-                      height: 150,
-                      color: Colors.grey[300],
-                      child: const Icon(Icons.broken_image, size: 50),
-                    ),
+                // bool ভ্যালু চেক করে আইকন বা টেক্সট দেখানো
+                subtitle: Text(
+                  todos.completed ? "Completed" : "Pending",
+                  style: TextStyle(
+                    color: todos.completed ? Colors.green : Colors.red,
+                    fontWeight: FontWeight.bold,
                   ),
+                ),
+                trailing: Icon(
+                  todos.completed ? Icons.check_circle : Icons.pending,
+                  color: todos.completed ? Colors.green : Colors.red,
                 ),
               ),
             );

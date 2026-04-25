@@ -12,17 +12,17 @@ import 'package:api_testing/features/home/models/photos_model.dart';
 //   }
 // }
 
-class PhotosRepository {
+class TodosRepository {
   final ApiService apiService;
 
-  PhotosRepository(this.apiService);
+  TodosRepository(this.apiService);
 
   // এখানে int page প্যারামিটার যোগ করা হয়েছে
-  Future<List<PhotosModel>> fetchPhotos(int page) async {
+  Future<List<TodosModel>> fetchPhotos(int page) async {
     // ডাইনামিক URL যেখানে প্রতি পেজে ২০টি করে ডাটা আসবে
     final String url = 'https://jsonplaceholder.typicode.com/photos?_page=$page&_limit=20';
 
     final data = await apiService.get(url);
-    return data.map((e) => PhotosModel.fromJson(e)).toList();
+    return data.map((e) => TodosModel.fromJson(e)).toList();
   }
 }

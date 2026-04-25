@@ -1,9 +1,11 @@
 import 'package:api_testing/core/constant/app_icons.dart';
 import 'package:api_testing/core/constant/app_strings.dart';
 import 'package:api_testing/features/home/models/tab_item.dart';
+import 'package:api_testing/features/home/screens/albums_screen.dart';
 import 'package:api_testing/features/home/screens/comments_screen.dart';
 import 'package:api_testing/features/home/screens/photos_screen.dart';
 import 'package:api_testing/features/home/screens/posts_screen.dart';
+import 'package:api_testing/features/home/screens/todos_screen.dart';
 import 'package:api_testing/features/home/screens/users_screen.dart';
 import 'package:flutter/material.dart';
 
@@ -28,8 +30,8 @@ class TabBarScreen extends StatelessWidget {
       PostsScreen(),
       CommentsScreen(),
       PhotosScreen(),
-      Center(child: Text("Albums Screen")),
-      Center(child: Text("Todos Screen")),
+      AlbumsScreen(),
+      TodosScreen(),
     ];
 
     return DefaultTabController(
